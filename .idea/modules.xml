@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/GodWork.iml" filepath="$PROJECT_DIR$/.idea/GodWork.iml" />
+      <module fileurl="file://W:/django/YinguOnline/.idea/YinguOnline.iml" filepath="W:/django/YinguOnline/.idea/YinguOnline.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block 'title' %}
+服务器详情
+{% endblock %}
+
+{% block 'content' %}
+    <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" id="service" attr="{{ host_data.id }}">
+                            {{ host_data.host_name }} 详细信息
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>主机名称</th>
+                                            <td>{{ host_data.host_name }}</td>
+                                            <th>主机ip</th>
+                                            <td>{{ host_data.ip }}</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th>mac</th>
+                                            <td>{{ host_data.mac }}</td>
+                                            <th>cpu</th>
+                                            <td>{{ host_data.cpu }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>内存</th>
+                                            <td>{{ host_data.mem }}</td>
+                                            <th>磁盘</th>
+                                            <td>{{ host_data.disk }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>系统</th>
+                                            <td>{{ host_data.system }}</td>
+                                            <th>服务器型号</th>
+                                            <td>{{ host_data.model }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+            </div>
+    <div class="row">
+        <span style="margin-left: 70px;">
+            该服务器cpu状态
+        </span>
+        <button style="float: right; margin-right: 70px;font-size: 24px;" id="start">
+            开始
+        </button>
+        <select class="selectpicker" style="float: right; margin-right: 70px;font-size: 24px;" id="select">
+            {% for user in user_list %}
+                <option value ="{{ user.id }}" style="font-size: 24px;">{{ user.serverUserName }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="panel-body">
+         <div id="line-chart"></div>
+    </div>
+    <div class="row">
+        <form method="get">
+            <label>
+                命令:
+            </label>
+            <input type="text" name="command" id="command">
+            <input type="button" value="提交" id="submitCommand">
+        </form>
+    </div>
+    <div class="row">
+        <div id="result">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block 'action' %}
+
+        <script>
+        $(
+          function () {
+              var exampleData = [
+                    { year: '2008', data: 20 },
+                    { year: '2009', data: 10 },
+                    { year: '2010', data: 5 },
+                    { year: '2011', data: 5 },
+                    { year: '2012', data: 20 }
+                  ];
+              $("#start").click(
+                    function () {
+                        var userId = $("#select").find("option:selected").val();
+                        var serviceId = $("#service").attr("attr");
+                        var data = {
+                              "command":"vmstat 1 10",
+                              "ipaddr":"192.168.0.103",
+                              "userId":userId,
+                              "port":22,
+                              "serverId":serviceId
+                        };
+                        var url = "http://127.0.0.1:8000/api/setcpu?command="+data["command"]+"&ipaddr="+data["ipaddr"]+"&userId="+data["userId"]+"&port="+data["port"]+"&serverId="+data["serverId"];
+                        changeNav(url,"GET",{},false,
+                                function (data) {
+                                    if(data["statue"] == "success"){
+                                        url = "http://127.0.0.1:8000/service/getCpu?serverId=1"
+                                        changeNav(url,"GET",{},false,
+                                            function(data){
+                                                console.log(data["data"]);
+                                                $("#line-chart").empty();
+                                                new Morris.Line({
+                                                      element: 'line-chart',
+                                                      data: data["data"],
+                                                      xkey: 'year',
+                                                      ykeys: ['data'],
+                                                      labels: ['data'],
+                                                      lineColors: ['#3c8dbc']
+                                                });
+                                            },function (err) {
+                                                console.log(err)
+                                            }
+                                        )
+                                    }
+                                },
+                                function (err) {
+                                    console.log(err)
+                                }
+                        )
+                    }
+              );
+
+
+
+{#              var data = {#}
+{#                  "command":"vmstat 1 10",#}
+{#                  "ipaddr":"1921.168.1.18",#}
+{#                  "userId":"",#}
+{#                  "port":"",#}
+{#                  "serverId":"",#}
+{#              };#}
+{#              var url = "http://127.0.0.1:8000/api/test?a=1;#}
+{#              $("#submitCommand").click(#}
+{#                    function () {#}
+{#                        var value = change_nav(url,"get",{});#}
+{#                        console.log(value)#}
+{#                    }#}
+{#          );#}
+{#          change_nav(url,"get",{})#}
+          }
+        );
+        </script>
+        <script>
+            $(
+                    function () {
+                        $("#submitCommand").click(
+                                function () {
+                                    var userId = $("#select").find("option:selected").val();
+                                    var serviceId = $("#service").attr("attr");
+                                    var data = {
+                                         "command": $("#command").val(),{# "vmstat 1 10",#}
+                                          "ipaddr":"192.168.0.103",
+                                          "userId":userId,
+                                          "port":22,
+                                          "serverId":serviceId
+                                    };
+                                    var url = "http://127.0.0.1:8000/api/doCommand?command="+data["command"]+"&ipaddr="+data["ipaddr"]+"&userId="+data["userId"]+"&port="+data["port"]+"&serverId="+data["serverId"];
+                                    changeNav(url,"GET",{},false,
+                                        function (data) {
+                                            console.log("++++++++++++");
+                                            console.log(data);
+                                            $("#result").text(data["result"])
+                                        },
+                                        function (error) {
+                                            console.log("_______________");
+                                            console.log(error)
+                                        }
+
+                                    )
+                                }
+                        )
+                    }
+            )
+        </script>
+
+{#            <script>#}
+{#                var dataTime = new Date();#}
+{#                var unix_timestamp = Date.parse(dataTime)/1000;#}
+{#                var Data = [];#}
+{#                var content_data = [#}
+{#                        1000,#}
+{#                        8000,#}
+{#                        6000,#}
+{#                        4000,#}
+{#                        5000,#}
+{#                        6000,#}
+{#                        7000,#}
+{#                        6000,#}
+{#                        8000,#}
+{#                        10000,#}
+{#                        8000,#}
+{#                        10000,#}
+{#                ];#}
+{#                for(var i=1;i<13;i++){#}
+{#                    var times = unix_timestamp+i*5;#}
+{#                    var objData = new Date(times*1000);#}
+{#                    Y = objData.getFullYear() + '-';#}
+{#                    M = (objData.getMonth()+1 < 10 ? '0'+(objData.getMonth()+1) : objData.getMonth()+1) + '-';#}
+{#                    D = objData.getDate() + ' ';#}
+{#                    h = objData.getHours() + ':';#}
+{#                    m = objData.getMinutes() + ':';#}
+{#                    s = objData.getSeconds();#}
+{#                    result_time = Y+M+D+h+m+s;#}
+{#                    Data.push({"year":result_time,"data":content_data[i]});#}
+{#                    console.log(result_time);#}
+{##}
+{#                }#}
+{#                console.log(Data);#}
+{#                #实例化一个折线图的实例#}
+{#                var line = new Morris.Line({#}
+{#               element: 'line-chart', {# 要绘制的区域的id#}
+{#                resize: true, {# 自动尺寸id#}
+{#                data:Data, {# 表格的数据#}
+{#                xkey: 'year', {# x轴的关键字#}
+{#                ykeys: ['data'], {# y轴的关键字 #}
+{#                labels: ['数据1'],{# 标签 #}
+{#                lineColors: ['#3c8dbc'], {# 线条颜色#}
+{#                hideHover: 'true' {# 覆盖#}
+{#            });#}
+{#        </script>#}
+{#    #}
+{% endblock %}
