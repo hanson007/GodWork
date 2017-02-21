@@ -10,8 +10,12 @@ from User.forms import *
 from GodWork.views import hashpassword
 from django.http import HttpResponse
 import json
+import logging
 
 # Create your views here.
+
+
+log = logging.getLogger('user')
 
 
 def index(request):
@@ -43,12 +47,20 @@ def edit(request, id):
     return render_to_response('user/edit.html', locals(), context_instance=RequestContext(request))
 
 
-def delete(request, id):
+def delete(request):
     # 删除
-    statue = "删除"
-    User.objects.get(pk=id).delete()
-    users = User.objects.all()
-    return render_to_response('user/index.html', locals(), context_instance=RequestContext(request))
+    response = HttpResponse()
+    currency = Currency(request)
+    rq_post = getattr(currency, 'rq_post')
+    data = json.loads(rq_post('data'))
+    log.info(u'删除的用户ID %s' % (' '.join(data)))
+    try:
+        for id in data:
+            User.objects.get(pk=int(id)).delete()
+    except Exception, e:
+        log.error(e)
+    response.write(json.dumps('成功'))
+    return response
 
 
 def GetDepartment(request):

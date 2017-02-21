@@ -10,6 +10,9 @@ class Currency(object):
     def rq_get(self,key):
         return self.request.GET.get(key, '').strip()
 
+    def rq_post(self,key):
+        return self.request.POST.get(key, '').strip()
+
 
 class datetime_help(object):
     # 日期时间帮助

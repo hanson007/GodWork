@@ -21,7 +21,7 @@ from views import *
 urlpatterns = [
     url(r'^index/', index),
     url(r'^edit/(?P<id>\d+)/$', edit),
-    url(r'^delete/(?P<id>\d+)/$', delete),
+    url(r'^delete/$', delete),
     url(r'^GetDepartment/$', GetDepartment),
     url(r'^uedit/$', uedit),
 

@@ -38,6 +38,10 @@
 {#          </tbody>#}
 {#        </table>#}
 {#    </div>#}
+{#    <form action="/user/delete/" method="post">#}
+{#    {% csrf_token %}#}
+{#    <input type="submit" value="提交">#}
+{#    </form>#}
  <div id="toolbar" class="btn-group">
  <button id="btn_add" type="button" class="btn btn-default">
  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
@@ -136,12 +140,59 @@ $('#table').bootstrapTable({
 
 
 /*
+*获取需要删除的数据id号
+*/
+function get_delete_data() {
+    var data = [];
+    $('#table').find('tr').each(function () {
+        var is_checked = $(this).children('td:eq(0)').children().prop('checked');
+        if (is_checked){
+            var id = $(this).children('td:eq(1)').text();
+            data.push(id);
+        }
+    });
+
+    return data
+}
+
+
+
+
+/*
 *删除
 */
 $('#btn_delete').click(function () {
-    $('#table').find('tr').each(function () {
-        console.log(this)
-    })
-})
+    data = JSON.stringify(get_delete_data());
+    var url = "/user/delete/";
+
+	var index = layer.confirm('确定删除吗？', {
+	  btn: ['确定','取消'] //按钮
+	}, function(){
+		$.post(url,{data:data},function(msg){
+			ajax_callback(msg);
+		 });
+	}, function(){
+	  layer.close(index)
+	});
+});
+
+
+
+/*
+*ajax get callback
+*/
+function ajax_callback(msg){
+    var msg =  $.parseJSON(msg);
+    var index = layer.alert(msg, {
+        skin: 'layui-layer-molv' //样式类名
+    },function(){
+        if (msg == '成功'){
+            window.location="/user/index/";
+        }
+        else{
+           layer.close(index)
+        }
+    });
+}
 </script>
 {% endblock %}
