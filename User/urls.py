@@ -24,6 +24,8 @@ urlpatterns = [
     url(r'^delete/$', delete),
     url(r'^GetDepartment/$', GetDepartment),
     url(r'^uedit/$', uedit),
+    url(r'^add/$', add),
+    url(r'^save_add/$', save_add),
 
 
 ]

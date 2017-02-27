@@ -67,11 +67,10 @@ def GetDepartment(request):
     response = HttpResponse()
     currency = Currency(request)
     rq_get = getattr(currency, 'rq_get')
-    page_num = int(rq_get('offset'))
+    offset = int(rq_get('offset'))
     PAGE_SIZE = int(rq_get('limit'))
     users = User.objects.all().values()
-    pager = Paginator_ajax(page_num, users, PAGE_SIZE)
-
+    pager = Paginator_ajax(offset, users, PAGE_SIZE)
     response.write(json.dumps(pager.data))
     return response
 
@@ -89,5 +88,31 @@ def uedit(request):
     user.email = email
     user.phone = phone
     user.save()
-    response.write(json.dumps('123'))
+    response.write(json.dumps(u'成功'))
+    return response
+
+
+def add(request):
+    # 新增
+    return render_to_response('user/add.html', locals(), context_instance=RequestContext(request))
+
+
+def save_add(request):
+    # 保存新增页面提交的数据
+    response = HttpResponse()
+    currency = Currency(request)
+    rq_post = getattr(currency, 'rq_post')
+    data = json.loads(rq_post('data'))
+
+    username = data['username']
+    password = data['password']
+    email = data['email']
+    phone = data['phone']
+    user = User()
+    user.username = username
+    user.password = password
+    user.email = email
+    user.phone = phone
+    user.save()
+    response.write(json.dumps(u'成功'))
     return response

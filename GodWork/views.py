@@ -2,6 +2,7 @@
 # -*-coding:utf-8-*-
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
+from django.template import RequestContext
 from User.models import User
 from User.forms import *
 import hashlib
@@ -92,6 +93,7 @@ def logout(request):
     del request.session["username"]
     return render_to_response("logout.html")
 
+
 def login(request):
     result = {}
     # User.objects.filter(username='huangxiaoxue').delete()
@@ -111,7 +113,8 @@ def login(request):
             result["error"] = "用户或者密码错误"
             return render_to_response("login.html", locals())
     else:
-        return render_to_response("login.html", locals())
+        return render_to_response("login.html", locals(), context_instance=RequestContext(request))
+
 
 def forbiden(request,error):
     return render_to_response("404.html",locals())

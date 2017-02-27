@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block 'title' %}
+    用户注册
+{% endblock %}
+{% block 'content' %}
+    <form action="" method="post" class="register_form" id="register_form">
+        {% csrf_token %}
+        <p><label for="id_username">用户名称:</label> <input class="form-control" id="id_username" maxlength="32" name="username" type="text"></p>
+        <p><label for="id_password">用户密码:</label> <input class="form-control" id="id_password" maxlength="32" name="password" type="text"></p>
+        <p><label for="id_email">用户邮箱:</label> <input class="form-control" id="id_email" name="email" type="text"></p>
+        <p><label for="id_phone">用户手机:</label> <input class="form-control" id="id_phone" maxlength="18" name="phone" type="text"></p>
+        <p><label for="id_photo">Photo:</label> <input id="id_photo" name="photo" type="file"></p>
+        <input id="save" type="button" value="保存用户" class="btn btn-primary">
+    </form>
+    {{ errors }}
+{% endblock %}
+{% block 'action' %}
+<script>
+
+function get_data() {
+    username = $('#id_username').val();
+    password = $('#id_password').val();
+    email = $('#id_email').val();
+    phone = $('#id_phone').val();
+    photo = $('#id_photo').val();
+
+    data = {
+    'username': username,
+    'password': password,
+    'email': email,
+    'phone': phone,
+    'photo': photo
+    };
+    return data
+}
+
+
+
+
+/*
+*删除
+*/
+$('#save').click(function () {
+    data = JSON.stringify(get_data());
+    var url = "/user/save_add/";
+	var index = layer.confirm('确定吗？', {
+	  btn: ['确定','取消'] //按钮
+	}, function(){
+		$.post(url,{data:data},function(msg){
+			ajax_callback(msg);
+		 });
+	}, function(){
+	  layer.close(index)
+	});
+});
+
+
+
+/*
+*ajax get callback
+*/
+function ajax_callback(msg){
+    var msg =  $.parseJSON(msg);
+    var index = layer.alert(msg, {
+        skin: 'layui-layer-molv' //样式类名
+    },function(){
+        if (msg == '成功'){
+            window.location="/user/index/";
+        }
+        else{
+           layer.close(index)
+        }
+    });
+}
+</script>
+{% endblock %}

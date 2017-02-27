@@ -73,8 +73,8 @@ class Paginator_help:
 class Paginator_ajax(object):
     # bootstrap-table 插件 后端分页
 
-    def __init__(self, page_num, queryset, PAGE_SIZE):
-        self.page_num = self.check_page_num(page_num)  # 当前页码
+    def __init__(self, offset, queryset, PAGE_SIZE):
+        self.page_num = offset/PAGE_SIZE + 1  # 当前页码
         self.queryset = queryset  # 需要分页的对象集合
         self.PAGE_SIZE = PAGE_SIZE  # 每页显示多少条
         self.pages = self.get_Paginator_obj  # 获取分页对象
@@ -82,12 +82,6 @@ class Paginator_ajax(object):
         self.total = self.pages.count # queryset 对象集合的总数
         self.rows = self._get_rows
 
-    @staticmethod
-    def check_page_num(page_num):
-        # 检查页码
-        if page_num <= 0:
-            page_num = 0
-        return page_num + 1
 
     @property
     def get_current_page(self):
