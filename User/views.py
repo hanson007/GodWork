@@ -5,6 +5,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from controller.public.pagination import Paginator_ajax
 from controller.core.public import *
+from permission import permission
 from models import *
 from User.forms import *
 from GodWork.views import hashpassword
@@ -17,11 +18,16 @@ import logging
 
 log = logging.getLogger('user')
 
-
+@permission
 def index(request):
     # 用户列表
     statue = "用户列表"
     users = User.objects.all()
+    username = request.session["username"]
+    user = User.objects.get(username=username)
+    user_methods = Method.objects.get(users=user)
+    print username,user,user_methods.name
+
     return render_to_response('user/index.html', locals(), context_instance=RequestContext(request))
 
 

@@ -22,7 +22,7 @@ class Group(models.Model):
 
 
 class Method(models.Model):
-    name = models.CharField(max_length=32,verbose_name="权限名称")
+    name = models.CharField(max_length=32, verbose_name="权限名称")
     users = models.ManyToManyField(User)
     groups = models.ManyToManyField(Group)
 

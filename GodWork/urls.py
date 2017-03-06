@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^logout/', logout),
 
     url(r'^404/(?P<error>\w+)',forbiden),
+    url(r'^403/$', forbiden403),
 
     url(r'^service/',include('Service.urls')),
     url(r'^api/', include('Api.urls')),
